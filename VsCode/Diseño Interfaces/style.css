@@ -1,0 +1,17 @@
+#parrafo1{
+color: red;
+
+}
+p {
+color: blue;
+
+}
+.texto{
+color:green;
+}
+
+.contenedor {
+    color: darkblue;
+    font-family: Arial, sans-serif;
+    border: 2px solid red;
+}
