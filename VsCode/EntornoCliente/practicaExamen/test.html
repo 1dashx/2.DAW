@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario: Examen DWEC Tema 3 - Aeducar</title>
+  <style>
+    :root {
+      --moodle-blue: #0f6cbf;
+      --moodle-dark-blue: #094175;
+      --moodle-bg: #f2f4f8;
+      --card-bg: #ffffff;
+      --border-color: #dee2e6;
+      --text-main: #333333;
+      --text-muted: #6a737d;
+      --q-info-bg: #e7f3fe;
+      --q-info-border: #b8daff;
+      --correct-bg: #d4edda;
+      --correct-border: #c3e6cb;
+      --correct-text: #155724;
+      --error-bg: #f8d7da;
+      --error-border: #f5c6cb;
+      --error-text: #721c24;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--moodle-bg);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    /* BARRA SUPERIOR AEDUCAR / MOODLE */
+    .navbar-aeducar {
+      background-color: #ffffff;
+      border-bottom: 2px solid var(--moodle-blue);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--moodle-blue);
+    }
+    .brand-badge {
+      background: #e9ecef;
+      color: #495057;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: normal;
+    }
+    .user-pill {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--moodle-blue);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    /* CONTENEDOR PRINCIPAL CON SIDEBAR (LAYOUT MOODLE) */
+    .page-layout {
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* PREGUNTAS ESTILO MOODLE / AEDUCAR */
+    .question-block {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    @media (max-width: 600px) {
+      .question-block {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* PANEL LATERAL DE LA PREGUNTA (Info box Moodle) */
+    .info-column {
+      background: #f8f9fa;
+      border-right: 1px solid var(--border-color);
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .info-column .qno {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .info-column .state {
+      font-size: 0.8rem;
+    }
+
+    /* CUERPO DE LA PREGUNTA */
+    .content-column {
+      padding: 1.25rem;
+    }
+    .qtext {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    pre.code-snippet {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 0.9rem;
+      border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    /* OPCIONES DE RESPUESTA ESTILO MOODLE */
+    .answer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .answer-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.5rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .answer-row:hover {
+      background-color: #f1f3f5;
+    }
+    .answer-row input[type="radio"] {
+      margin-top: 0.2rem;
+      cursor: pointer;
+    }
+
+    /* SIDEBAR NAVEGACIÓN DEL CUESTIONARIO (AEDUCAR) */
+    .sidebar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 1rem;
+    }
+    .sidebar-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #495057;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    /* CRONÓMETRO ESTILO MOODLE */
+    .moodle-timer {
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+      padding: 0.75rem;
+      border-radius: 4px;
+      text-align: center;
+      margin-bottom: 1.25rem;
+      font-weight: bold;
+    }
+    .timer-digits {
+      font-size: 1.5rem;
+      font-family: monospace;
+      display: block;
+      margin-top: 0.25rem;
+    }
+    .timer-alert {
+      background: #f8d7da !important;
+      border-color: #f5c6cb !important;
+      color: #721c24 !important;
+      animation: blinker 1s linear infinite;
+    }
+    @keyframes blinker {
+      50% { opacity: 0.5; }
+    }
+
+    /* CUADRÍCULA DE NAVEGACIÓN 1..6 */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .nav-cell {
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      text-align: center;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      background: #f8f9fa;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    .nav-cell.answered {
+      background: #6c757d;
+      color: #fff;
+      border-color: #6c757d;
+    }
+    .nav-cell.active {
+      outline: 2px solid var(--moodle-blue);
+    }
+
+    /* BOTONES AEDUCAR */
+    .btn-moodle-primary {
+      display: block;
+      width: 100%;
+      background-color: var(--moodle-blue);
+      color: #ffffff;
+      border: 1px solid var(--moodle-dark-blue);
+      padding: 0.65rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.15s;
+    }
+    .btn-moodle-primary:hover {
+      background-color: var(--moodle-dark-blue);
+    }
+    .btn-moodle-secondary {
+      display: block;
+      width: 100%;
+      background-color: #6c757d;
+      color: #ffffff;
+      border: 1px solid #5a6268;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 0.6rem;
+    }
+    .btn-moodle-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    /* FEEDBACK Y REVISIÓN MOODLE */
+    .feedback-panel {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .feedback-panel.correct {
+      background-color: var(--correct-bg);
+      border: 1px solid var(--correct-border);
+      color: var(--correct-text);
+    }
+    .feedback-panel.incorrect {
+      background-color: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+    }
+
+    .grade-summary {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      display: none;
+    }
+    .grade-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--moodle-blue);
+    }
+    .grade-score {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+      color: #212529;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER AEDUCAR -->
+  <nav class="navbar-aeducar">
+    <div class="brand-title">
+      <span>Aeducar</span>
+      <span class="brand-badge">DWEC · Cuestionario Oficial</span>
+    </div>
+    <div class="user-pill">
+      <span>Alumno DAW</span>
+      <div class="avatar">DA</div>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO ESTILO CUESTIONARIO MOODLE -->
+  <div class="page-layout">
+    
+    <!-- COLUMNA PRINCIPAL DE PREGUNTAS -->
+    <main>
+      <div id="grade-summary" class="grade-summary">
+        <div class="grade-title">Resumen de tu intento</div>
+        <div id="grade-score" class="grade-score">0,00 / 10,00</div>
+        <p id="grade-feedback" style="font-weight: 500;"></p>
+      </div>
+
+      <div id="quiz-questions"></div>
+
+      <div style="margin: 2rem 0 4rem;">
+        <button id="btn-submit" class="btn-moodle-primary" style="max-width: 300px;" onclick="corregirTest()">Terminar intento...</button>
+      </div>
+    </main>
+
+    <!-- SIDEBAR: CRONÓMETRO + NAVEGACIÓN POR EL CUESTIONARIO -->
+    <aside>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Tiempo restante</div>
+        <div id="timer-box" class="moodle-timer">
+          <span>Tiempo del examen</span>
+          <span id="countdown" class="timer-digits">15:00</span>
+        </div>
+
+        <div class="sidebar-title">Navegación por el cuestionario</div>
+        <div class="nav-grid" id="nav-grid">
+          <!-- Celdas 1..6 generadas por JS -->
+        </div>
+
+        <button class="btn-moodle-primary" onclick="corregirTest()">Terminar intento...</button>
+        <button class="btn-moodle-secondary" onclick="iniciarNuevoTest()">Nuevo intento aleatorio</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    // BANCO EXTENSO DE 31 PREGUNTAS (Originales del alumno + tipo test compañeros + ampliaciones)
+    const bancoPreguntas = [
+      {
+        origen: "test_resuelto_cliente.txt",
+        titulo: "Cadenas de texto (String)",
+        codigo: `let str = \`Mi\\n\`;\nconsole.log(str.length);\n\nlet s = 'Hola';\ns = 'h' + s[1] + s[2] + s[3];\nconsole.log(s, s[-1]);\n\nconsole.log(\`1 + 2 = \${1 + 2}.\`);`,
+        opciones: [
+          "a. 3hola a1 + 2 = 3.",
+          "b. 3Hola undefined1 + 2 = 3.",
+          "c. undefinedhola undefined1 + 2 = 3.",
+          "d. 2hola undefined1 + 2 = 3.",
+          "e. 3hola undefined1 + 2 = ${1 + 2}.",
+          "f. 3hola undefined1 + 2 = 3."
+        ],
+        correcta: 5,
+        explicacion: "'\\n' cuenta como un único carácter (longitud 3). Los índices negativos en string (s[-1]) devuelven undefined. ${1 + 2} evalúa la expresión dentro de la plantilla literal."
+      },
+      {
+        origen: "test_resuelto_cliente.txt",
+        titulo: "Arrays: sort() y map()",
+        codigo: `let a = [1, 2, 15];\n\na.sort();\nalert(a);\n\na.sort((x, y) => y - x);\nalert(a);\n\nalert(["Bilbo", "Gandalf", "Nazgul"].map(item => item.length));`,
+        opciones: [
+          "a. Alert 1: 1,2,15 / Alert 2: 15,2,1 / Alert 3: 5,7,6",
+          "b. Alert 1: 1,15,2 / Alert 2: 15,2,1 / Alert 3: 5,6,7",
+          "c. Alert 1: 1,15,2 / Alert 2: 15,2,1 / Alert 3: Bilbo,Gandalf,Nazgul",
+          "d. Alert 1: 1,15,2 / Alert 2: 1,2,15 / Alert 3: 5,7,6",
+          "e. Alert 1: 1,15,2 / Alert 2: 15,2,1 / Alert 3: 5,7,6",
+          "f. Alert 1: 1,15,2 / Alert 2: 1,15,2 / Alert 3: 5,7,6"
+        ],
+        correcta: 4,
+        explicacion: "sort() sin parámetros compara como cadenas de texto ('15' antes que '2'). (x,y)=>y-x ordena de mayor a menor. map devuelve las longitudes en el orden original (5, 7, 6)."
+      },
+      {
+        origen: "test_resuelto_cliente.txt",
+        titulo: "Métodos Math y conversión de tipos",
+        codigo: `let n = -1.6;\nconsole.log(Math.floor(n), Math.ceil(n), Math.round(n), Math.trunc(n));\n\nlet price = 12.34;\nconsole.log(price.toFixed(5), typeof price.toFixed(5), typeof +price.toFixed(5));`,
+        opciones: [
+          "a. -2 -1 -2 -1 / 12.34000 string number",
+          "b. -1 -2 -2 -1 / 12.34000 string number",
+          "c. -2 -1 -2 -1 / 12.34000 number number",
+          "d. -2 -1 -1 -1 / 12.34000 string number",
+          "e. -2 -1 -2 -1 / 12.34 string number",
+          "f. -2 -1 -2 -1 / 12.34000 string string"
+        ],
+        correcta: 0,
+        explicacion: "Math.floor(-1.6) es -2. Math.ceil(-1.6) redondea hacia arriba (-1). toFixed(5) devuelve un string, y el '+' unario lo convierte de nuevo a number."
+      },
+      {
+        origen: "test_resuelto_cliente.txt",
+        titulo: "Arrays: referencias y length",
+        codigo: `let fruits = [\"Apples\", \"Pear\", \"Orange\"];\nlet cart = fruits;\ncart.push(\"Banana\");\n\nfruits.length = 0;\nconsole.log(cart.length, cart.at(-1), cart[-1]);\n\nfruits.length = 5;\nconsole.log(fruits[3], fruits.length);`,
+        opciones: [
+          "a. 4 / 4 Banana undefined / undefined 5",
+          "b. 4 / 0 undefined undefined / undefined 0",
+          "c. 4 / 0 undefined undefined / Banana 5",
+          "d. 4 / 2 Pear undefined / undefined 5",
+          "e. 3 / 0 undefined undefined / undefined 5",
+          "f. 4 / 0 undefined undefined / undefined 5"
+        ],
+        correcta: 5,
+        explicacion: "cart y fruits apuntan al mismo array. length = 0 vacía todo el array. Al poner length = 5 las posiciones intermedias quedan vacías (undefined)."
+      },
+      {
+        origen: "test_resuelto_cliente.txt",
+        titulo: "Estructuras Map",
+        codigo: `const mapa = new Map();\nmapa.set(\"nombre\", \"Ana\");\nmapa.set(\"edad\", 25);\nmapa.set(\"nombre\", \"Luis\");\n\nconsole.log(mapa.size);\nconsole.log(mapa.get(\"nombre\"));\nconsole.log(mapa.get(\"pais\"));`,
+        opciones: [
+          "a. 2 / Luis / Error: la clave no existe",
+          "b. 3 / Ana / undefined",
+          "c. 2 / Ana / undefined",
+          "d. 2 / Luis / undefined",
+          "e. 3 / Luis / undefined",
+          "f. 2 / Luis / null"
+        ],
+        correcta: 3,
+        explicacion: "Repetir una clave con set() actualiza el valor ('Luis') sin aumentar size (es 2). get() devuelve undefined si la clave no existe."
+      },
+      {
+        origen: "test_resuelto_cliente.txt",
+        titulo: "Números y sistemas numéricos",
+        codigo: `console.log(0b101, 1_000);\nconsole.log((255).toString(16));\nconsole.log(parseInt('2n9c', 36), parseInt('0xff', 16));`,
+        opciones: [
+          "a. 101 1_000 / ff / 123456 255",
+          "b. 5 1000 / ff / 123456 255",
+          "c. 5 1000 / ff / 2 255",
+          "d. 5 1000 / ff / 123456 undefined",
+          "e. 5 1000 / ff / 123456 NaN",
+          "f. 5 1000 / 11111111 / 123456"
+        ],
+        correcta: 1,
+        explicacion: "0b101 es binario (5). (255).toString(16) es 'ff'. parseInt('2n9c', 36) interpreta base 36 (123456) y '0xff' en base 16 es 255."
+      },
+      {
+        origen: "tipo_test_javascript_tema_3.md",
+        titulo: "Bucle for...in en Arrays",
+        codigo: `const numeros = [10, 20, 30];\nnumeros.extra = \"x\";\n\nfor (const i in numeros) {\n  console.log(i);\n}`,
+        opciones: [
+          "a. 10, 20, 30",
+          "b. 0, 1, 2",
+          "c. 0, 1, 2, extra",
+          "d. 10, 20, 30, x",
+          "e. Error",
+          "f. undefined, undefined, undefined"
+        ],
+        correcta: 2,
+        explicacion: "for...in recorre las claves/índices enumerables, incluidas las propiedades añadidas al array ('extra')."
+      },
+      {
+        origen: "tipo_test_javascript_tema_3.md",
+        titulo: "Number.MAX_SAFE_INTEGER",
+        codigo: `let a = Number.MAX_SAFE_INTEGER + 1;\nlet b = Number.MAX_SAFE_INTEGER + 2;\n\nconsole.log(a === b);`,
+        opciones: [
+          "a. false",
+          "b. NaN",
+          "c. Error",
+          "d. true",
+          "e. undefined",
+          "f. null"
+        ],
+        correcta: 3,
+        explicacion: "Por encima de MAX_SAFE_INTEGER se pierde precisión y ambos valores acaban siendo 9007199254740992."
+      },
+      {
+        origen: "tipo_test_javascript_tema_3.md",
+        titulo: "Objeto Boolean con new",
+        codigo: `let f = new Boolean(false);\n\nif (f) {\n  console.log(\"A\");\n} else {\n  console.log(\"B\");\n}`,
+        opciones: [
+          "a. false",
+          "b. B",
+          "c. Error",
+          "d. No se muestra nada",
+          "e. A",
+          "f. undefined"
+        ],
+        correcta: 4,
+        explicacion: "Un objeto Boolean creado con new es un objeto, y todo objeto es truthy en una condición."
+      },
+      {
+        origen: "tipo_test_javascript_tema_3.md",
+        titulo: "Comportamiento return en forEach",
+        codigo: `[10, 20, 30].forEach(v => {\n  if (v === 20) return;\n  console.log(v);\n});`,
+        opciones: [
+          "a. 10",
+          "b. 10, 30",
+          "c. 10, 20",
+          "d. 10, 20, 30",
+          "e. Error",
+          "f. 20"
+        ],
+        correcta: 1,
+        explicacion: "En forEach, return solo sale de la iteración actual (como un continue); no detiene el bucle."
+      },
+      {
+        origen: "tipo_test_javascript_tema_3.md",
+        titulo: "Bucle for...of sobre objeto literal",
+        codigo: `const persona = { nombre: \"Ana\", edad: 25 };\n\nfor (const valor of persona) {\n  console.log(valor);\n}`,
+        opciones: [
+          "a. TypeError: persona is not iterable",
+          "b. Ana, 25",
+          "c. nombre, edad",
+          "d. undefined, undefined",
+          "e. No muestra nada",
+          "f. [nombre, 'Ana'], [edad, 25]"
+        ],
+        correcta: 0,
+        explicacion: "for...of solo funciona con iterables (arrays, strings, Map, Set). Los objetos normales no lo son."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Date: cambio de año automático",
+        codigo: `let f = new Date(2025, 11, 31);\nf.setDate(f.getDate() + 1);\nconsole.log(f.getFullYear(), f.getMonth(), f.getDate());`,
+        opciones: [
+          "a. 2025 11 32",
+          "b. 2026 0 1",
+          "c. 2026 1 1",
+          "d. NaN NaN NaN",
+          "e. 2025 12 1",
+          "f. 2026 12 1"
+        ],
+        correcta: 1,
+        explicacion: "Al sumar 1 día a 31 de Diciembre (mes 11), Date ajusta automáticamente a 1 de Enero (mes 0) de 2026."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Set: referencias vs primitivos",
+        codigo: `let s = new Set();\ns.add([1]);\ns.add([1]);\ns.add(1);\ns.add(1);\nconsole.log(s.size);`,
+        opciones: [
+          "a. 2",
+          "b. 1",
+          "c. 3",
+          "d. 4",
+          "e. TypeError",
+          "f. 0"
+        ],
+        correcta: 2,
+        explicacion: "Los arrays son referencias distintas en memoria y se guardan ambos. El número 1 primitivo no se duplica. Total: 3."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Web Storage: coerción a string",
+        codigo: `sessionStorage.setItem('temp', 100);\nlet v = sessionStorage.getItem('temp');\nconsole.log(typeof v, v === 100, v === '100');`,
+        opciones: [
+          "a. number true false",
+          "b. string false true",
+          "c. string true false",
+          "d. object false false",
+          "e. undefined false false",
+          "f. string true true"
+        ],
+        correcta: 1,
+        explicacion: "Web Storage siempre guarda strings. typeof es 'string', por lo que v === 100 es false y v === '100' es true."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "String: slice vs substring",
+        codigo: `let str = 'Murcielago';\nconsole.log(str.slice(4, 1));\nconsole.log(str.substring(4, 1));`,
+        opciones: [
+          "a. urc / urc",
+          "b. '' / urc",
+          "c. urc / ''",
+          "d. undefined / urc",
+          "e. '' / ''",
+          "f. Error"
+        ],
+        correcta: 1,
+        explicacion: "slice(4, 1) devuelve string vacío ''. substring(4, 1) intercambia los argumentos a (1, 4) y devuelve 'urc'."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Array: método splice() mutador",
+        codigo: `let letras = ['a', 'b', 'c', 'd'];\nlet cortadas = letras.splice(1, 2, 'z');\nconsole.log(letras.join(''), cortadas.join(''));`,
+        opciones: [
+          "a. azd bc",
+          "b. abcd z",
+          "c. azcd b",
+          "d. ad bc",
+          "e. azd b",
+          "f. bc azd"
+        ],
+        correcta: 0,
+        explicacion: "splice(1, 2, 'z') modifica el array original dejando ['a', 'z', 'd'] y devuelve lo extraído ['b', 'c']."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "JSON.stringify() con funciones",
+        codigo: `let obj = {\n  nombre: 'Alex',\n  saludo: function() { return 'hola'; },\n  extra: undefined\n};\nconsole.log(JSON.stringify(obj));`,
+        opciones: [
+          "a. {\"nombre\":\"Alex\",\"saludo\":\"hola\",\"extra\":null}",
+          "b. {\"nombre\":\"Alex\"}",
+          "c. {\"nombre\":\"Alex\",\"saludo\":function(),\"extra\":undefined}",
+          "d. {\"nombre\":\"Alex\",\"extra\":undefined}",
+          "e. TypeError",
+          "f. {\"nombre\":\"Alex\",\"extra\":null}"
+        ],
+        correcta: 1,
+        explicacion: "JSON.stringify() ignora y descarta automáticamente las propiedades con funciones y con valor undefined."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Math: cálculo aleatorio entero",
+        codigo: `let min = 5, max = 10;\n// Supongamos que Math.random() genera 0.0\nlet r = Math.floor(Math.random() * (max - min + 1)) + min;\nconsole.log(r);`,
+        opciones: [
+          "a. 0",
+          "b. 1",
+          "c. 5",
+          "d. 6",
+          "e. 10",
+          "f. NaN"
+        ],
+        correcta: 2,
+        explicacion: "Math.floor(0 * 6) + 5 = 0 + 5 = 5 (el valor mínimo del rango)."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "BigInt y Number incompatibles",
+        codigo: `let nBig = 10n;\nlet nNum = 5;\ntry {\n  console.log(nBig + nNum);\n} catch (e) {\n  console.log(e.name);\n}`,
+        opciones: [
+          "a. 15n",
+          "b. 15",
+          "c. TypeError",
+          "d. RangeError",
+          "e. SyntaxError",
+          "f. '105'"
+        ],
+        correcta: 2,
+        explicacion: "JavaScript no permite mezclar tipos BigInt y Number con operadores matemáticos; lanza TypeError."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "BOM: screen.availHeight",
+        codigo: `console.log(screen.availHeight <= screen.height);`,
+        opciones: [
+          "a. true",
+          "b. false",
+          "c. undefined",
+          "d. TypeError",
+          "e. NaN",
+          "f. null"
+        ],
+        correcta: 0,
+        explicacion: "screen.availHeight descuenta la barra de tareas o dock del sistema, por lo que siempre es menor o igual a screen.height (true)."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "DOM: insertRow(-1)",
+        codigo: `let t = document.createElement('table');\nlet f1 = t.insertRow(0);\nf1.id = 'F1';\nlet f2 = t.insertRow(-1);\nf2.id = 'F2';\nconsole.log(t.rows[0].id, t.rows[1].id);`,
+        opciones: [
+          "a. F2 F1",
+          "b. F1 F2",
+          "c. F1 undefined",
+          "d. IndexSizeError",
+          "e. F2 undefined",
+          "f. null null"
+        ],
+        correcta: 1,
+        explicacion: "insertRow(0) inserta al principio y insertRow(-1) inserta al final. Por tanto rows[0] es 'F1' y rows[1] es 'F2'."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Date: día Domingo en getDay()",
+        codigo: `let dom = new Date(2026, 1, 1); // Cae en Domingo\nconsole.log(dom.getDay());`,
+        opciones: [
+          "a. 7",
+          "b. 0",
+          "c. 1",
+          "d. 6",
+          "e. -1",
+          "f. null"
+        ],
+        correcta: 1,
+        explicacion: "getDay() devuelve valores de 0 a 6, donde 0 es Domingo."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "String: método trim()",
+        codigo: `let cad = \" \\n  Hola DAW \\t \";\nconsole.log(cad.trim().length, cad.trim().split(' ').length);`,
+        opciones: [
+          "a. 8 2",
+          "b. 8 3",
+          "c. 10 2",
+          "d. 7 2",
+          "e. 8 1",
+          "f. 9 2"
+        ],
+        correcta: 0,
+        explicacion: "trim() retira espacios y caracteres de escape exteriores, dejando 'Hola DAW' (8 caracteres y 2 palabras)."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Map: objetos como claves",
+        codigo: `let m = new Map();\nlet k1 = {};\nlet k2 = {};\nm.set(k1, 'Valor1');\nm.set(k2, 'Valor2');\nconsole.log(m.get(k1), m.size);`,
+        opciones: [
+          "a. Valor2 1",
+          "b. Valor1 2",
+          "c. Valor1 1",
+          "d. undefined 2",
+          "e. TypeError",
+          "f. Valor2 2"
+        ],
+        correcta: 1,
+        explicacion: "Los objetos literales {} son referencias distintas; se tratan como claves separadas (size = 2) y k1 devuelve 'Valor1'."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Array: filter() inmutable",
+        codigo: `let nums = [1, 5, 10, 15];\nlet res = nums.filter(x => x > 7);\nconsole.log(nums.length, res.length);`,
+        opciones: [
+          "a. 2 2",
+          "b. 4 2",
+          "c. 4 4",
+          "d. 2 4",
+          "e. 4 0",
+          "f. 0 2"
+        ],
+        correcta: 1,
+        explicacion: "filter() no modifica el array original nums (longitud 4) y crea un nuevo array res con 2 elementos."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Number.isNaN vs isNaN",
+        codigo: `console.log(isNaN(\"Hola\"), Number.isNaN(\"Hola\"));`,
+        opciones: [
+          "a. true true",
+          "b. false false",
+          "c. true false",
+          "d. false true",
+          "e. TypeError false",
+          "f. true undefined"
+        ],
+        correcta: 2,
+        explicacion: "isNaN('Hola') convierte a Number dando NaN (true). Number.isNaN('Hola') es estricto y comprueba que sea de tipo number (false)."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Array: includes() con NaN",
+        codigo: `let arr = [1, NaN, 2];\nconsole.log(arr.indexOf(NaN), arr.includes(NaN));`,
+        opciones: [
+          "a. 1 true",
+          "b. -1 false",
+          "c. -1 true",
+          "d. 1 false",
+          "e. undefined true",
+          "f. -1 -1"
+        ],
+        correcta: 2,
+        explicacion: "indexOf busca con === (NaN === NaN da false, devuelve -1). includes() sí identifica el valor NaN (devuelve true)."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Web Storage: getItem de clave inexistente",
+        codigo: `localStorage.removeItem(\"inexistente\");\nconsole.log(localStorage.getItem(\"inexistente\"));`,
+        opciones: [
+          "a. undefined",
+          "b. null",
+          "c. Error",
+          "d. ''",
+          "e. false",
+          "f. 0"
+        ],
+        correcta: 1,
+        explicacion: "Pedir una clave que no existe en localStorage siempre devuelve null."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "BOM: tipo de dato de location.port",
+        codigo: `console.log(typeof location.port);`,
+        opciones: [
+          "a. number",
+          "b. string",
+          "c. undefined",
+          "d. object",
+          "e. boolean",
+          "f. null"
+        ],
+        correcta: 1,
+        explicacion: "Todas las propiedades del objeto location que representan texto o números (como port) son de tipo string."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "Date: comparación con operadores relacionales",
+        codigo: `let d1 = new Date(2026, 0, 1);\nlet d2 = new Date(2026, 0, 1);\nconsole.log(d1 == d2, d1 >= d2);`,
+        opciones: [
+          "a. true true",
+          "b. false false",
+          "c. false true",
+          "d. true false",
+          "e. TypeError true",
+          "f. false undefined"
+        ],
+        correcta: 2,
+        explicacion: "d1 == d2 compara referencias de objetos distintas (false). d1 >= d2 convierte internamente las fechas a milisegundos numéricos (true)."
+      },
+      {
+        origen: "Ampliación Tema 3",
+        titulo: "String: replaceAll y mayúsculas",
+        codigo: `let t = \"Gato gato GATO\";\nconsole.log(t.replaceAll('gato', 'perro'));`,
+        opciones: [
+          "a. perro perro perro",
+          "b. Gato perro GATO",
+          "c. Gato perro perro",
+          "d. perro gato GATO",
+          "e. SyntaxError",
+          "f. Gato gato GATO"
+        ],
+        correcta: 1,
+        explicacion: "replaceAll con texto plano es sensible a mayúsculas/minúsculas. Solo reemplaza la palabra exacta 'gato' en minúsculas."
+      }
+    ];
+
+    let preguntasActuales = [];
+    let tiempoRestante = 15 * 60;
+    let temporizadorInterval = null;
+    let testFinalizado = false;
+
+    function obtenerPreguntasAleatorias(cantidad = 6) {
+      const copia = [...bancoPreguntas];
+      for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+      }
+      return copia.slice(0, cantidad);
+    }
+
+    function iniciarTemporizador() {
+      if (temporizadorInterval) clearInterval(temporizadorInterval);
+      tiempoRestante = 15 * 60;
+      testFinalizado = false;
+      actualizarRelojVisual();
+
+      temporizadorInterval = setInterval(() => {
+        if (tiempoRestante > 0) {
+          tiempoRestante--;
+          actualizarRelojVisual();
+        } else {
+          clearInterval(temporizadorInterval);
+          alert("Tiempo agotado. El cuestionario se enviará y corregirá automáticamente.");
+          corregirTest();
+        }
+      }, 1000);
+    }
+
+    function actualizarRelojVisual() {
+      const min = Math.floor(tiempoRestante / 60);
+      const seg = tiempoRestante % 60;
+      const clockEl = document.getElementById("countdown");
+      const boxEl = document.getElementById("timer-box");
+      clockEl.innerText = `${min.toString().padStart(2, "0")}:${seg.toString().padStart(2, "0")}`;
+
+      if (tiempoRestante <= 120) {
+        boxEl.classList.add("timer-alert");
+      } else {
+        boxEl.classList.remove("timer-alert");
+      }
+    }
+
+    function renderizarTest() {
+      const quizContainer = document.getElementById("quiz-questions");
+      const navGrid = document.getElementById("nav-grid");
+      quizContainer.innerHTML = "";
+      navGrid.innerHTML = "";
+      document.getElementById("grade-summary").style.display = "none";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      preguntasActuales.forEach((p, index) => {
+        // Celdas de la barra lateral Moodle
+        const navCell = document.createElement("a");
+        navCell.href = `#q-${index}`;
+        navCell.className = "nav-cell";
+        navCell.id = `nav-cell-${index}`;
+        navCell.innerText = index + 1;
+        navGrid.appendChild(navCell);
+
+        // Bloque de pregunta Moodle
+        const qBlock = document.createElement("div");
+        qBlock.className = "question-block";
+        qBlock.id = `q-${index}`;
+
+        let opcionesHTML = "";
+        p.opciones.forEach((opt, optIndex) => {
+          opcionesHTML += `
+            <label class="answer-row">
+              <input type="radio" name="pregunta_${index}" value="${optIndex}" onchange="marcarRespondida(${index})">
+              <span>${opt}</span>
+            </label>
+          `;
+        });
+
+        qBlock.innerHTML = `
+          <div class="info-column">
+            <span class="qno">Pregunta ${index + 1}</span>
+            <span class="state" id="state-${index}">Sin responder aún</span>
+            <span style="font-size:0.75rem; color:#868e96; margin-top:0.5rem;">Puntúa como 1,67</span>
+          </div>
+          <div class="content-column">
+            <div class="qtext">
+              <strong>${p.titulo}:</strong> ¿Qué mostrará por pantalla o consola el siguiente código?
+            </div>
+            <pre class="code-snippet"><code>${p.codigo}</code></pre>
+            <div style="font-size:0.85rem; color:#495057; margin-bottom:0.4rem; font-weight:600;">Seleccione una:</div>
+            <div class="answer-list">
+              ${opcionesHTML}
+            </div>
+            <div id="feedback-${index}"></div>
+          </div>
+        `;
+        quizContainer.appendChild(qBlock);
+      });
+    }
+
+    function marcarRespondida(index) {
+      const stateEl = document.getElementById(`state-${index}`);
+      const navCell = document.getElementById(`nav-cell-${index}`);
+      if (stateEl) stateEl.innerText = "Respuesta guardada";
+      if (navCell) navCell.classList.add("answered");
+    }
+
+    function corregirTest() {
+      if (testFinalizado) return;
+      testFinalizado = true;
+      clearInterval(temporizadorInterval);
+
+      let aciertos = 0;
+
+      preguntasActuales.forEach((p, index) => {
+        const seleccion = document.querySelector(`input[name="pregunta_${index}"]:checked`);
+        const userChoice = seleccion ? parseInt(seleccion.value) : -1;
+        const esCorrecta = userChoice === p.correcta;
+
+        if (esCorrecta) aciertos++;
+
+        const fbContainer = document.getElementById(`feedback-${index}`);
+        const stateEl = document.getElementById(`state-${index}`);
+        const navCell = document.getElementById(`nav-cell-${index}`);
+
+        const letraUsuario = userChoice >= 0 ? ["a","b","c","d","e","f"][userChoice] : "ninguna";
+        const letraCorrecta = ["a","b","c","d","e","f"][p.correcta];
+
+        if (stateEl) {
+          stateEl.innerHTML = esCorrecta 
+            ? `<strong style="color:var(--correct-text)">Correcta</strong>` 
+            : `<strong style="color:var(--error-text)">Incorrecta</strong>`;
+        }
+
+        if (fbContainer) {
+          fbContainer.innerHTML = `
+            <div class="feedback-panel ${esCorrecta ? 'correct' : 'incorrect'}">
+              <p><strong>${esCorrecta ? '✔ Correcta' : '✖ Incorrecta'}.</strong> La respuesta correcta es la <strong>${letraCorrecta}</strong>.</p>
+              <p style="margin-top:0.4rem; font-size:0.85rem;"><strong>Retroalimentación:</strong> ${p.explicacion}</p>
+            </div>
+          `;
+        }
+      });
+
+      // Cálculo de calificación sobre 10
+      const notaFinal = ((aciertos / preguntasActuales.length) * 10).toFixed(2);
+      document.getElementById("grade-score").innerText = `${notaFinal.replace('.', ',')} / 10,00 (${Math.round((aciertos/preguntasActuales.length)*100)}%)`;
+
+      let feedbackMsg = "";
+      if (notaFinal >= 9) feedbackMsg = "Calificación: Sobresaliente. Dominas perfectamente los conceptos avanzados de DWEC.";
+      else if (notaFinal >= 7) feedbackMsg = "Calificación: Notable. Buen resultado, revisa los matices fallados en la retroalimentación.";
+      else if (notaFinal >= 5) feedbackMsg = "Calificación: Aprobado. Conviene repasar las trampas de tipado y objetos nativos.";
+      else feedbackMsg = "Calificación: Suspenso. Repasa detenidamente la retroalimentación de cada pregunta antes del examen.";
+
+      document.getElementById("grade-feedback").innerText = feedbackMsg;
+      document.getElementById("grade-summary").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function iniciarNuevoTest() {
+      preguntasActuales = obtenerPreguntasAleatorias(6);
+      renderizarTest();
+      iniciarTemporizador();
+    }
+
+    iniciarNuevoTest();
+  </script>
+</body>
+</html>
